@@ -42,6 +42,7 @@ public class FeeController {
             // 如果提供了用户ID和类型，只查询该用户的记录
             if (userId != null && userType != null) {
                 String mappedUserType = mapUserType(userType);
+                System.out.println("查询欠费记录 - 用户ID: " + userId + ", 用户类型: " + userType + " -> " + mappedUserType);
                 queryWrapper.eq("user_id", userId)
                           .eq("user_type", mappedUserType);
             }

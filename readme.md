@@ -163,3 +163,31 @@ frontend/
 
 ## 许可证
 MIT License
+
+
+
+USE library_db;
+
+-- 查看管理员表
+SELECT * FROM administrators;
+
+-- 查看图书表
+SELECT * FROM books;
+
+-- 查看借阅记录表
+SELECT * FROM borrowrecords;
+
+-- 查看图书分类表
+SELECT * FROM categories;
+
+-- 查看教职工表
+SELECT * FROM faculty;
+
+-- 查看费用表
+SELECT * FROM fees;
+
+-- 查看出版社表
+SELECT * FROM publishers;
+
+-- 查看学生表
+SELECT * FROM students;
