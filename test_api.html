@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API测试</title>
+</head>
+<body>
+    <h1>API测试页面</h1>
+    <button onclick="testFees()">测试欠费接口</button>
+    <button onclick="testBorrowRecords()">测试借阅记录接口</button>
+    <div id="result"></div>
+
+    <script>
+        async function testFees() {
+            try {
+                const response = await fetch('http://localhost:8080/fees');
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '<h3>欠费接口响应:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<h3>欠费接口错误:</h3><pre>' + error.message + '</pre>';
+            }
+        }
+
+        async function testBorrowRecords() {
+            try {
+                const response = await fetch('http://localhost:8080/borrow-records');
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '<h3>借阅记录接口响应:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<h3>借阅记录接口错误:</h3><pre>' + error.message + '</pre>';
+            }
+        }
+    </script>
+</body>
+</html> 
