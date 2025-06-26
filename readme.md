@@ -8,67 +8,36 @@
 - 后端：Java, Spring Boot, MyBatis-Plus, Spring Security
 - 数据库：MySQL
 
-## 管理员初始账号（可用于登录测试）
-| 用户名   | 密码      | 角色         |
-|----------|-----------|--------------|
-| admin1   | 123456    | 超级管理员   |
-| admin2   | 123456    | 普通管理员   |
-| manager  | 123456    | 普通管理员   |
+## 用户角色说明
+系统支持三种类型的用户：
 
-> 请在数据库 `Administrators` 表中插入以上账号，或在初始化时手动添加。
+1. 学生用户（以 admin1 为例）：
+   - 可以查看和借阅图书
+   - 可以查看个人借阅记录
+   - 可以查看和支付欠费
+   - 可以续借图书
+   - 可以归还图书
 
-## 数据库初始化
+2. 教职工用户（以 admin2 为例）：
+   - 具有比学生更长的借阅期限
+   - 可以查看个人借阅记录
+   - 可以查看和支付欠费
+   - 可以续借图书
+   - 可以归还图书
 
-### 1. 创建数据库
-```sql
-CREATE DATABASE library_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
+3. 管理员用户（以 manager 为例）：
+   - 可以查看所有用户的借阅记录
+   - 可以管理图书信息
+   - 可以处理借阅和归还请求
+   - 可以管理欠费记录
+   - 可以生成统计报表
 
-### 2. 创建管理员表
-```sql
-CREATE TABLE Administrators (
-    admin_id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    name VARCHAR(50),
-    role VARCHAR(20),
-    phone VARCHAR(20),
-    email VARCHAR(100),
-    register_time DATETIME
-);
-```
-
-### 3. 插入初始管理员账号
-```sql
-INSERT INTO Administrators (username, password, name, role, phone, email, register_time)
-VALUES
-('admin1', '123456', '超级管理员', '超级管理员', '12345678901', 'admin1@example.com', NOW()),
-('admin2', '123456', '普通管理员', '普通管理员', '12345678902', 'admin2@example.com', NOW()),
-('manager', '123456', '普通管理员', '普通管理员', '12345678903', 'manager@example.com', NOW());
-```
-
-### 4. 创建欠费记录表
-```sql
-CREATE TABLE Fees (
-    fee_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id VARCHAR(50) NOT NULL,
-    user_type VARCHAR(20) NOT NULL,
-    record_id INT,
-    fee_type VARCHAR(50) NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    due_date DATE NOT NULL,
-    pay_date DATE,
-    status VARCHAR(20) DEFAULT '未缴'
-);
-```
-
-### 5. 插入测试欠费记录
-```sql
-INSERT INTO Fees (user_id, user_type, fee_type, amount, due_date, status)
-VALUES
-('admin1', 'admin', '逾期罚款', 50.00, '2024-01-15', '未缴'),
-('admin2', 'admin', '损坏赔偿', 100.00, '2024-01-20', '未缴');
-```
+## 初始账号信息
+| 用户名 | 密码   | 角色类型 | 说明                           |
+|--------|--------|----------|--------------------------------|
+| admin1 | 123456 | 学生     | 用于测试学生用户功能           |
+| admin2 | 123456 | 教职工   | 用于测试教职工用户功能         |
+| manager| 123456 | 管理员   | 用于测试管理员功能，可查看所有记录 |
 
 ## 项目结构
 
@@ -112,51 +81,76 @@ frontend/
 └─ vite.config.js
 ```
 
-## 启动与运行
+## 数据库表结构
+系统包含以下主要数据表：
+1. `administrators` - 管理员信息表
+2. `books` - 图书信息表
+3. `borrowrecords` - 借阅记录表
+4. `categories` - 图书分类表
+5. `faculty` - 教职工信息表
+6. `fees` - 欠费记录表
+7. `publishers` - 出版社信息表
+8. `students` - 学生信息表
 
-### 1. 启动后端
-1. 进入 backend 目录：
-   ```bash
-   cd backend
-   ```
-2. 安装依赖并编译：
-   ```bash
-   mvn clean install
-   ```
-3. 启动 Spring Boot 应用：
-   ```bash
-   mvn spring-boot:run
-   ```
-4. 后端默认端口为 8080。
+详细的表结构见 `database_init.sql` 文件。
 
-### 2. 启动前端
-1. 进入 frontend 目录：
-   ```bash
-   cd ../frontend
-   ```
-2. 安装依赖：
-   ```bash
-   npm install
-   ```
-3. 启动开发服务器：
-   ```bash
-   npm run dev
-   ```
-4. 打开浏览器访问 [http://localhost:3000/](http://localhost:3000/)
+## 启动说明
 
-### 3. 登录系统
-- 使用上表中的管理员账号登录。
-- 登录成功后可进入图书管理页面。
+### 1. 数据库初始化
+1. 创建数据库：
+```sql
+CREATE DATABASE library_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+2. 执行初始化脚本：
+```bash
+mysql -u root -p library_db < database_init.sql
+```
 
-## 主要功能
-- 多角色用户系统（学生、教职工、管理员）
-- 图书检索与借阅、归还、续借
-- 借阅记录管理
-- 欠费管理与支付
-- 管理员统计与报表
+### 2. 启动后端服务
+```bash
+cd backend
+mvn clean install
+mvn spring-boot:run
+```
+后端服务默认运行在 8080 端口。
 
-## API文档
-后端接口为 RESTful 风格，具体接口见 controller 代码。
+### 3. 启动前端服务
+```bash
+cd frontend
+npm install
+npm run dev
+```
+前端服务默认运行在 3000 端口。
+
+## 主要功能模块
+
+### 1. 用户认证
+- 多角色登录（学生、教职工、管理员）
+- 基于 JWT 的身份验证
+- 权限控制
+
+### 2. 图书管理
+- 图书信息维护
+- 库存管理
+- 分类管理
+- 出版社管理
+
+### 3. 借阅管理
+- 图书借阅
+- 图书归还
+- 续借功能
+- 借阅历史查询
+
+### 4. 欠费管理
+- 逾期罚款
+- 损坏赔偿
+- 欠费记录查询
+- 在线缴费
+
+### 5. 统计报表
+- 借阅统计
+- 欠费统计
+- 图书库存统计
 
 ## 开发者
 - [9月13]
